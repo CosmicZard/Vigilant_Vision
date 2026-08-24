@@ -7,7 +7,9 @@ backend_dir = Path(__file__).resolve().parent.parent / "app"
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.main import app
+from app.database.connection import init_db
 
+init_db()
 client = TestClient(app)
 
 

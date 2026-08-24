@@ -147,8 +147,8 @@ export default function Cameras() {
 
       {/* Add Camera Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4 relative z-10">
             <h3 className="font-extrabold text-base text-slate-800">Register Surveillance Node</h3>
             <form onSubmit={handleCreateCamera} className="space-y-3 text-xs">
               <div>

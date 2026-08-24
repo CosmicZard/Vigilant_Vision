@@ -83,7 +83,7 @@ export default function LeafletMap({
   height = '500px',
 }) {
   return (
-    <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative bg-slate-50">
+    <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative z-0 isolate bg-slate-50">
       <MapContainer
         center={center}
         zoom={zoom}
