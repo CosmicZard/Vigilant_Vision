@@ -8,12 +8,21 @@ const api = axios.create({
 export const VideosAPI = {
   list: (skip = 0, limit = 50) => api.get(`/videos?skip=${skip}&limit=${limit}`),
   get: (videoId) => api.get(`/videos/${videoId}`),
-  upload: (formData) => api.post('/videos/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
+  upload: (formData, onProgress = null) => api.post('/videos/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000,
+    onUploadProgress: (progressEvent) => {
+      if (onProgress && progressEvent.total) {
+        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        onProgress(percentCompleted);
+      }
+    }
   }),
   process: (videoId, cameraId = 'CAM-01') => api.post(`/videos/${videoId}/process?camera_id=${cameraId}`),
   progress: (videoId) => api.get(`/videos/${videoId}/progress`),
   delete: (videoId) => api.delete(`/videos/${videoId}`),
+  clearSynthetic: () => api.delete('/videos/synthetic/clear'),
+  detections: (videoId) => api.get(`/videos/${videoId}/detections`),
   streamUrl: (videoId) => `/api/videos/${videoId}/stream`,
 };
 
@@ -49,6 +58,15 @@ export const DatasetsAPI = {
   list: () => api.get('/datasets'),
   generateSynthetic: (scenarioType = 'all_inclusive', durationSec = 8, cameraId = 'CAM-01') =>
     api.post(`/datasets/generate-synthetic?scenario_type=${scenarioType}&duration_sec=${durationSec}&camera_id=${cameraId}`),
+};
+
+export const TrainingAPI = {
+  start: (params = { base_model: 'yolov8n.pt', epochs: 10, batch_size: 8 }) =>
+    api.post('/training/start', params),
+  status: () => api.get('/training/status'),
+  activate: (modelName = null) =>
+    api.post(modelName ? `/training/activate?model_name=${modelName}` : '/training/activate'),
+  models: () => api.get('/training/models'),
 };
 
 export default api;

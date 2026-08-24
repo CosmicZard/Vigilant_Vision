@@ -178,9 +178,7 @@ export default function Events({ onSelectEvent }) {
             <option value="">All Civic Defect Types</option>
             <option value="POTHOLE_DETECTED">Pothole Detected</option>
             <option value="GARBAGE_DETECTED">Garbage & Debris</option>
-            <option value="MISSING_TRAFFIC_LIGHT">Missing Traffic Light</option>
-            <option value="MISSING_SIGN_BOARD">Missing Sign Board</option>
-            <option value="MISSING_STREET_LIGHT_NIGHT">Night Streetlight Defect</option>
+            <option value="WATERLOGGING_DETECTED">Waterlogging & Flooding</option>
             <option value="ROAD_DEFECT_DETECTED">Road Surface Defect</option>
             <option value="WRONG_WAY_DRIVING">Wrong-Way Driving</option>
             <option value="RASH_DRIVING">Rash Driving</option>

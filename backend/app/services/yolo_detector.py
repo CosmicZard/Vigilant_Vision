@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
 import cv2
 from ultralytics import YOLO
@@ -11,25 +11,52 @@ logger = logging.getLogger("ibvap.yolo")
 
 class YOLODetector:
     """
-    Wraps YOLOv8 for smart road and border video object detection.
-    Maps classes: person, car, bus, truck, motorcycle, bicycle, traffic light, stop sign, etc.
-    Also provides specialized defect detection heuristics.
+    Advanced YOLOv8 Video Analytics Detector:
+    - High sensitivity COCO object detection
+    - Adaptive image enhancement (CLAHE / contrast boost for dark or washed-out CCTV)
+    - Categorized detection labeling (Vehicles, Pedestrians, Infrastructure, Animals, Obstacles)
     """
 
-    # COCO Class mapping relevant to road / border monitoring
-    RELEVANT_CLASSES = {
-        0: "person",
-        1: "bicycle",
-        2: "car",
-        3: "motorcycle",
-        5: "bus",
-        7: "truck",
-        9: "traffic light",
-        11: "stop sign",
-        12: "parking meter",
-        13: "bench",
-        26: "handbag",
-        28: "suitcase",
+    # Comprehensive Class categorization for Smart Road & Border Surveillance
+    CATEGORY_MAPPING = {
+        # Vehicles
+        "car": ("vehicle", "Car"),
+        "motorcycle": ("vehicle", "Motorcycle"),
+        "bus": ("vehicle", "Bus"),
+        "truck": ("vehicle", "Truck"),
+        "bicycle": ("vehicle", "Bicycle"),
+        "train": ("vehicle", "Train"),
+        "airplane": ("vehicle", "Aircraft"),
+        "boat": ("vehicle", "Boat"),
+        
+        # Pedestrians / Vulnerable Road Users
+        "person": ("pedestrian", "Pedestrian"),
+        
+        # Infrastructure / Traffic Devices
+        "traffic light": ("infrastructure", "Traffic Light"),
+        "stop sign": ("infrastructure", "Stop Sign"),
+        "parking meter": ("infrastructure", "Parking Meter"),
+        "fire hydrant": ("infrastructure", "Fire Hydrant"),
+        
+        # Road Obstacles / Luggage / Debris Objects
+        "backpack": ("obstacle", "Backpack / Luggage"),
+        "umbrella": ("obstacle", "Umbrella"),
+        "handbag": ("obstacle", "Handbag / Waste"),
+        "tie": ("obstacle", "Object"),
+        "suitcase": ("obstacle", "Suitcase / Luggage"),
+        "bottle": ("obstacle", "Bottle / Trash"),
+        "cup": ("obstacle", "Litter / Cup"),
+        "chair": ("obstacle", "Road Obstacle (Chair)"),
+        "couch": ("obstacle", "Road Obstacle (Debris)"),
+        
+        # Animals (Highway / Border Crossing Hazards)
+        "dog": ("animal_hazard", "Stray Dog"),
+        "cat": ("animal_hazard", "Cat"),
+        "horse": ("animal_hazard", "Horse"),
+        "sheep": ("animal_hazard", "Livestock / Sheep"),
+        "cow": ("animal_hazard", "Livestock / Cow"),
+        "elephant": ("animal_hazard", "Wildlife Hazard"),
+        "bear": ("animal_hazard", "Wildlife Hazard"),
     }
 
     def __init__(self, model_name: Optional[str] = None):
@@ -50,27 +77,52 @@ class YOLODetector:
                 logger.error(f"Failed to load fallback YOLO model: {ex}")
                 self.model = None
 
-    def detect_objects(self, frame: np.ndarray, conf_threshold: Optional[float] = None) -> List[Dict[str, Any]]:
+    def enhance_frame(self, frame: np.ndarray) -> np.ndarray:
         """
-        Run inference on a single frame.
-        Returns list of detections with format:
-        {
-            "class_id": int,
-            "class_name": str,
-            "confidence": float,
-            "bbox": [x1, y1, x2, y2], # absolute pixels
-            "center": (cx, cy),
-            "area": float
-        }
+        Applies adaptive histogram equalization (CLAHE) on the luminance channel
+        to dramatically boost object clarity in dark, shadowed, or hazy road frames.
+        """
+        try:
+            lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+            l, a, b = cv2.split(lab)
+            
+            # Check average luminance
+            avg_lum = np.mean(l)
+            if avg_lum < 85 or avg_lum > 190:
+                clahe = cv2.createCLAHE(clipLimit=2.5, tileGridSize=(8, 8))
+                cl = clahe.apply(l)
+                limg = cv2.merge((cl, a, b))
+                return cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+            return frame
+        except Exception:
+            return frame
+
+    def detect_objects(
+        self,
+        frame: np.ndarray,
+        conf_threshold: Optional[float] = None,
+        apply_enhancement: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        Run high-precision inference on a single frame.
         """
         if self.model is None or frame is None:
             return []
 
         conf = conf_threshold if conf_threshold is not None else settings.CONFIDENCE_THRESHOLD
         
+        # Optimize frame contrast if necessary
+        proc_frame = self.enhance_frame(frame) if apply_enhancement else frame
+
         try:
-            # Run inference
-            results = self.model(frame, conf=conf, verbose=False)
+            # Run inference with standardized image size and NMS
+            results = self.model(
+                proc_frame,
+                conf=conf,
+                iou=settings.IOU_THRESHOLD,
+                imgsz=640,
+                verbose=False
+            )
             detections = []
 
             for result in results:
@@ -81,19 +133,35 @@ class YOLODetector:
                 for box in boxes:
                     cls_id = int(box.cls[0].item())
                     score = float(box.conf[0].item())
-                    
-                    # Filter for traffic / road / border relevant objects
-                    class_name = self.RELEVANT_CLASSES.get(cls_id, result.names.get(cls_id, f"obj_{cls_id}"))
+                    raw_name = result.names.get(cls_id, f"obj_{cls_id}").lower()
+
+                    # Extract category and human-friendly display label
+                    cat_info = self.CATEGORY_MAPPING.get(raw_name, ("other", raw_name.title()))
+                    category, display_name = cat_info
 
                     xyxy = box.xyxy[0].cpu().numpy().tolist()
                     x1, y1, x2, y2 = [int(v) for v in xyxy]
-                    cx = (x1 + x2) // 2
-                    cy = (y1 + y2) // 2
-                    area = (x2 - x1) * (y2 - y1)
+                    
+                    # Sanitize bounding box boundaries
+                    h, w = frame.shape[:2]
+                    x1, y1 = max(0, x1), max(0, y1)
+                    x2, y2 = min(w, x2), min(h, y2)
+                    
+                    cw = max(0, x2 - x1)
+                    ch = max(0, y2 - y1)
+                    area = cw * ch
+                    
+                    if cw < 6 or ch < 6:
+                        continue  # Skip microscopic false positives
+
+                    cx = x1 + cw // 2
+                    cy = y1 + ch // 2
 
                     detections.append({
                         "class_id": cls_id,
-                        "class_name": class_name,
+                        "class_name": raw_name,
+                        "display_name": display_name,
+                        "category": category,
                         "confidence": round(score, 3),
                         "bbox": [x1, y1, x2, y2],
                         "center": (cx, cy),

@@ -7,9 +7,7 @@ import {
   RefreshCw,
   AlertOctagon,
   Trash2,
-  SunMedium,
-  Signpost,
-  Moon
+  Droplets
 } from 'lucide-react';
 import { DatasetsAPI, VideosAPI } from '../services/api';
 
@@ -56,7 +54,7 @@ export default function Datasets({ onVideoGenerated }) {
   const scenarios = [
     {
       id: 'potholes',
-      title: '1. Potholes & Road Defect Detection',
+      title: '1. Potholes & Surface Cracks',
       desc: 'Simulates asphalt surface deterioration, irregular dark depression contours, and depth contrast on road lanes.',
       badge: 'Infrastructure',
       icon: AlertOctagon,
@@ -64,40 +62,24 @@ export default function Datasets({ onVideoGenerated }) {
     },
     {
       id: 'garbage',
-      title: '2. Garbage & Debris Obstruction',
+      title: '2. Garbage & Debris Piles',
       desc: 'Simulates roadside litter piles, discarded plastic bags, cardboard, and waste debris along road shoulders.',
       badge: 'Civic Sanitation',
       icon: Trash2,
       color: 'emerald',
     },
     {
-      id: 'missing_traffic_light',
-      title: '3. Missing Traffic Light Detection',
-      desc: 'Simulates a junction mast arm pole where expected traffic signal heads are broken, removed, or missing.',
-      badge: 'Traffic Safety',
-      icon: SunMedium,
-      color: 'rose',
-    },
-    {
-      id: 'missing_sign_board',
-      title: '4. Missing Sign Board Detection',
-      desc: 'Simulates a regulatory speed limit / stop signpost with an empty mount bracket and missing sign plate.',
-      badge: 'Compliance',
-      icon: Signpost,
+      id: 'waterlogging',
+      title: '3. Waterlogging & Flooding Detection',
+      desc: 'Simulates standing road water puddles, surface ponding, and wet reflective road sectors creating hydroplaning hazards.',
+      badge: 'Monsoon Safety',
+      icon: Droplets,
       color: 'sky',
     },
     {
-      id: 'missing_street_light_night',
-      title: '5. Night Streetlight Defect (Blackout)',
-      desc: 'Simulates a nighttime road corridor with illuminated sections and a dangerous unlit dark zone due to a broken streetlight.',
-      badge: 'Night Surveillance',
-      icon: Moon,
-      color: 'indigo',
-    },
-    {
       id: 'all_inclusive',
-      title: '6. All-Inclusive Multi-Hazard Scenario',
-      desc: 'Comprehensive road footage combining traffic vehicles, potholes, garbage, and infrastructure defects.',
+      title: '4. All-Inclusive Multi-Hazard Scenario',
+      desc: 'Comprehensive road footage combining traffic vehicles, potholes, garbage piles, and waterlogging defects.',
       badge: 'Combined Test',
       icon: Sparkles,
       color: 'blue',
@@ -111,7 +93,7 @@ export default function Datasets({ onVideoGenerated }) {
         <div>
           <h1 className="text-2xl font-black text-slate-800 tracking-tight">Civic Defect Simulators & Datasets</h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Test and evaluate the 5 core AI detection capabilities: Potholes, Garbage, Missing Traffic Lights, Missing Signs, and Night Streetlight Blackouts
+            Test and evaluate the core AI detection capabilities: Potholes, Garbage & Debris, and Waterlogging & Road Flooding
           </p>
         </div>
         <button

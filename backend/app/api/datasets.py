@@ -29,7 +29,7 @@ def list_datasets():
 
 @router.post("/generate-synthetic", response_model=VideoResponse)
 def generate_synthetic_scenario(
-    scenario_type: str = Query("all_inclusive", description="potholes, garbage, missing_traffic_light, missing_sign_board, missing_street_light_night, all_inclusive"),
+    scenario_type: str = Query("all_inclusive", description="potholes, garbage, waterlogging, all_inclusive"),
     duration_sec: int = Query(8, ge=4, le=30),
     camera_id: str = Query("CAM-01"),
     db: Session = Depends(get_db)

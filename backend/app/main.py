@@ -12,6 +12,7 @@ from app.api.cameras import router as cameras_router
 from app.api.metrics import router as metrics_router
 from app.api.map import router as map_router
 from app.api.datasets import router as datasets_router
+from app.api.training import router as training_router
 
 # Configure Logging
 logging.basicConfig(
@@ -46,9 +47,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Static Directories for Evidence Snapshots & Uploads
+# Mount Static Directories for Evidence Snapshots, Uploads & Datasets
 app.mount("/evidence", StaticFiles(directory=str(settings.EVIDENCE_DIR)), name="evidence")
 app.mount("/uploads", StaticFiles(directory=str(settings.UPLOAD_DIR)), name="uploads")
+app.mount("/datasets", StaticFiles(directory=str(settings.DATASETS_DIR)), name="datasets")
 
 # Include Routers
 app.include_router(videos_router, prefix=settings.API_V1_STR)
@@ -57,6 +59,7 @@ app.include_router(cameras_router, prefix=settings.API_V1_STR)
 app.include_router(metrics_router, prefix=settings.API_V1_STR)
 app.include_router(map_router, prefix=settings.API_V1_STR)
 app.include_router(datasets_router, prefix=settings.API_V1_STR)
+app.include_router(training_router, prefix=settings.API_V1_STR)
 
 
 @app.get("/")

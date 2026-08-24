@@ -28,7 +28,7 @@
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background-color: #f8fafc !important;
+  isolation: isolate;
   z-index: 1 !important;
 }
 
@@ -59,4 +59,34 @@
 
 .soft-pulse {
   animation: soft-pulse 2s infinite;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
 }

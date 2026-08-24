@@ -84,3 +84,13 @@ def test_synthetic_scenario_generation():
     data = res.json()
     assert "video_id" in data
     assert data["source"] == "synthetic"
+
+
+def test_training_endpoints():
+    status_res = client.get("/api/training/status")
+    assert status_res.status_code == 200
+    assert "status" in status_res.json()
+
+    models_res = client.get("/api/training/models")
+    assert models_res.status_code == 200
+    assert len(models_res.json()) >= 1

@@ -15,14 +15,17 @@ def main():
     print("=" * 60)
     print("  IBVAP | Vigilant Vision - Smart Video Analytics")
     print("=" * 60)
-    print("[1/2] Starting FastAPI Backend on http://localhost:8000 ...")
+
+    # 1. Start Backend
+    print("[1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ...")
     backend_proc = subprocess.Popen(
-        [sys.executable, "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+        [sys.executable, str(BACKEND_DIR / "run_server.py")],
         cwd=str(BACKEND_DIR)
     )
 
     time.sleep(2)
 
+    # 2. Start Frontend
     print("[2/2] Starting React Vite Frontend on http://localhost:5173 ...")
     frontend_proc = subprocess.Popen(
         ["npm", "run", "dev"],
@@ -33,8 +36,8 @@ def main():
     print("\n" + "=" * 60)
     print("  SYSTEM READY!")
     print("  - Frontend Authority Dashboard: http://localhost:5173")
-    print("  - Backend REST API Docs:         http://localhost:8000/docs")
-    print("  - Health Status:                http://localhost:8000/health")
+    print("  - Backend REST API Docs:         http://127.0.0.1:8000/docs")
+    print("  - Health Status:                http://127.0.0.1:8000/health")
     print("=" * 60)
     print("Press Ctrl+C to terminate both servers.\n")
 

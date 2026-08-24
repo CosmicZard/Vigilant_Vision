@@ -11,16 +11,15 @@ from app.services.video_processor import VideoProcessor
 from app.config import settings
 
 def test_all_civic_defects():
-    print("=== Testing All 5 Civic & Smart Road Defect Scenarios ===")
+    print("=== Testing Core Civic & Smart Road Defect Scenarios ===")
     init_db()
     db = SessionLocal()
 
     defect_scenarios = [
         ("potholes", "Pothole Surface Defect"),
         ("garbage", "Roadside Garbage & Debris"),
-        ("missing_traffic_light", "Missing Traffic Light Signal"),
-        ("missing_sign_board", "Missing Regulatory Sign Board"),
-        ("missing_street_light_night", "Night Streetlight Blackout"),
+        ("waterlogging", "Waterlogging & Road Flooding"),
+        ("all_inclusive", "All-Inclusive Multi-Hazard Scenario"),
     ]
 
     for sc_id, label in defect_scenarios:
@@ -60,7 +59,7 @@ def test_all_civic_defects():
             print(f"    Evidence: {e.evidence_path}")
 
     db.close()
-    print("\n=== All 5 Defect Scenarios Verified Successfully! ===")
+    print("\n=== Civic Defect & Waterlogging Pipeline Verified Successfully! ===")
 
 if __name__ == "__main__":
     test_all_civic_defects()

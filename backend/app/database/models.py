@@ -78,7 +78,7 @@ class Event(Base):
     event_id = Column(String(64), primary_key=True, index=True)
     event_type = Column(String(64), nullable=False, index=True)
     # e.g., VEHICLE_DETECTED, TRAFFIC_CONGESTION, HEAVY_TRAFFIC, POTHOLE_DETECTED,
-    # ROAD_DEFECT_DETECTED, WATER_LOGGING, MISSING_SIGN_BOARD, MISSING_TRAFFIC_LIGHT,
+    # GARBAGE_DETECTED, WATERLOGGING_DETECTED, ROAD_DEFECT_DETECTED,
     # RASH_DRIVING, WRONG_WAY_DRIVING, POSSIBLE_COLLISION, POSSIBLE_HIT_AND_RUN
     
     severity = Column(String(32), nullable=False, default="MEDIUM", index=True)  # LOW, MEDIUM, HIGH, CRITICAL

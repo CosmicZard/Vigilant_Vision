@@ -13,7 +13,8 @@ from backend.tests.test_api import (
     test_cameras_crud,
     test_metrics_summary,
     test_map_endpoints,
-    test_synthetic_scenario_generation
+    test_synthetic_scenario_generation,
+    test_training_endpoints
 )
 from backend.tests.test_event_engine import (
     test_iou_computation,
@@ -30,6 +31,7 @@ def run_all_tests():
         ("test_metrics_summary", test_metrics_summary),
         ("test_map_endpoints", test_map_endpoints),
         ("test_synthetic_scenario_generation", test_synthetic_scenario_generation),
+        ("test_training_endpoints", test_training_endpoints),
         ("test_iou_computation", test_iou_computation),
         ("test_event_deduplication_and_debounce", test_event_deduplication_and_debounce),
     ]

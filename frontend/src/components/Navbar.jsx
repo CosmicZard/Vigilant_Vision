@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Shield,
   Sparkles,
@@ -8,16 +8,42 @@ import {
   ChevronDown,
   AlertOctagon,
   Trash2,
+  Droplets,
   SunMedium,
   Signpost,
-  Moon
+  Moon,
+  Volume2,
+  VolumeX,
+  CheckCheck,
+  ExternalLink,
+  ShieldAlert,
+  AlertTriangle,
+  Info,
+  Laptop
 } from 'lucide-react';
 import { DatasetsAPI } from '../services/api';
+import { useNotifications } from '../context/NotificationContext';
+import SeverityBadge from './SeverityBadge';
 
-export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }) {
+export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
   const [timeStr, setTimeStr] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDemoMenu, setShowDemoMenu] = useState(false);
+  const [showNotificationDrawer, setShowNotificationDrawer] = useState(false);
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'unread'
+  const notifRef = useRef(null);
+
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    clearAll,
+    soundEnabled,
+    setSoundEnabled,
+    desktopPermitted,
+    requestDesktopPermission,
+  } = useNotifications();
 
   useEffect(() => {
     const updateTime = () => {
@@ -27,6 +53,17 @@ export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Close drawer on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setShowNotificationDrawer(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleRunDemo = async (scenarioType) => {
@@ -43,6 +80,10 @@ export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }
       setIsGenerating(false);
     }
   };
+
+  const filteredNotifs = activeTab === 'unread'
+    ? notifications.filter((n) => !n.isRead)
+    : notifications;
 
   return (
     <header className="bg-white border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-sm">
@@ -83,7 +124,7 @@ export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }
       </div>
 
       {/* Right Controls */}
-      <div className="flex items-center gap-3 relative">
+      <div className="flex items-center gap-3 relative" ref={notifRef}>
         {/* Quick Demo Selector */}
         <div className="relative">
           <button
@@ -129,35 +170,13 @@ export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }
               </button>
 
               <button
-                onClick={() => handleRunDemo('missing_traffic_light')}
+                onClick={() => handleRunDemo('waterlogging')}
                 className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium transition"
               >
-                <SunMedium className="w-4 h-4 text-rose-500" />
+                <Droplets className="w-4 h-4 text-sky-500" />
                 <div>
-                  <div className="font-bold text-slate-800">3. Missing Traffic Light</div>
-                  <div className="text-[10px] text-slate-500">Signal junction without active lights</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleRunDemo('missing_sign_board')}
-                className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium transition"
-              >
-                <Signpost className="w-4 h-4 text-sky-500" />
-                <div>
-                  <div className="font-bold text-slate-800">4. Missing Sign Board</div>
-                  <div className="text-[10px] text-slate-500">Speed / regulatory signpost absent</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleRunDemo('missing_street_light_night')}
-                className="w-full text-left px-3 py-2 rounded-xl hover:bg-slate-50 flex items-center gap-2.5 text-slate-700 font-medium transition"
-              >
-                <Moon className="w-4 h-4 text-indigo-500" />
-                <div>
-                  <div className="font-bold text-slate-800">5. Night Streetlight Defect</div>
-                  <div className="text-[10px] text-slate-500">Dark blackout sector on night road</div>
+                  <div className="font-bold text-slate-800">3. Waterlogging & Flooding</div>
+                  <div className="text-[10px] text-slate-500">Detect standing water puddles & ponding</div>
                 </div>
               </button>
 
@@ -177,15 +196,161 @@ export default function Navbar({ onSyntheticGenerated, criticalAlertsCount = 0 }
           )}
         </div>
 
-        {/* Alerts Badge */}
-        <div className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer">
+        {/* Interactive Alerts Bell Button */}
+        <button
+          onClick={() => setShowNotificationDrawer(!showNotificationDrawer)}
+          className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-pointer"
+          title="Notification Center"
+        >
           <Bell className="w-4 h-4" />
-          {criticalAlertsCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black h-4 w-4 rounded-full flex items-center justify-center ring-2 ring-white">
-              {criticalAlertsCount}
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-black h-4.5 w-4.5 rounded-full flex items-center justify-center ring-2 ring-white animate-pulse">
+              {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-        </div>
+        </button>
+
+        {/* Notification Center Dropdown Drawer */}
+        {showNotificationDrawer && (
+          <div className="absolute right-0 top-12 w-80 sm:w-96 bg-white border border-slate-200 rounded-3xl shadow-2xl z-50 overflow-hidden text-xs animate-fade-in">
+            {/* Drawer Header */}
+            <div className="p-4 border-b border-slate-100 bg-slate-50/80 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <h4 className="font-extrabold text-sm text-slate-800">Alert Notifications</h4>
+                {unreadCount > 0 && (
+                  <span className="bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded-full text-[10px] border border-rose-200">
+                    {unreadCount} new
+                  </span>
+                )}
+              </div>
+
+              {/* Sound & Push Settings Controls */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className={`p-1.5 rounded-xl border transition ${
+                    soundEnabled
+                      ? 'bg-sky-50 border-sky-200 text-sky-700'
+                      : 'bg-slate-100 border-slate-200 text-slate-400'
+                  }`}
+                  title={soundEnabled ? 'Alert Audio Chime: ON' : 'Alert Audio Chime: MUTED'}
+                >
+                  {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                </button>
+
+                {!desktopPermitted && (
+                  <button
+                    onClick={requestDesktopPermission}
+                    className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition"
+                    title="Enable Desktop Push Alerts"
+                  >
+                    <Laptop className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 bg-white">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                    activeTab === 'all'
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-500 hover:bg-slate-100'
+                  }`}
+                >
+                  All ({notifications.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('unread')}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                    activeTab === 'unread'
+                      ? 'bg-slate-900 text-white'
+                      : 'text-slate-500 hover:bg-slate-100'
+                  }`}
+                >
+                  Unread ({unreadCount})
+                </button>
+              </div>
+
+              {notifications.length > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className="text-[11px] text-sky-600 hover:text-sky-700 font-semibold flex items-center gap-1"
+                >
+                  <CheckCheck className="w-3 h-3" />
+                  <span>Mark all read</span>
+                </button>
+              )}
+            </div>
+
+            {/* Notification Items List */}
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
+              {filteredNotifs.length === 0 ? (
+                <div className="p-8 text-center text-slate-400 space-y-1">
+                  <Bell className="w-8 h-8 mx-auto text-slate-300 mb-1" />
+                  <p className="font-semibold text-xs text-slate-600">No notifications</p>
+                  <p className="text-[10px]">New AI defect detections will appear here.</p>
+                </div>
+              ) : (
+                filteredNotifs.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => {
+                      markAsRead(n.id);
+                      if (onSelectEvent && n.eventData) {
+                        onSelectEvent(n.eventData);
+                        setShowNotificationDrawer(false);
+                      }
+                    }}
+                    className={`p-3.5 hover:bg-slate-50 transition cursor-pointer flex items-start gap-3 ${
+                      !n.isRead ? 'bg-sky-50/30' : 'bg-white'
+                    }`}
+                  >
+                    <div className="mt-0.5">
+                      {n.severity === 'CRITICAL' ? (
+                        <ShieldAlert className="w-4 h-4 text-rose-600" />
+                      ) : n.severity === 'HIGH' ? (
+                        <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      ) : (
+                        <Info className="w-4 h-4 text-sky-600" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className={`font-bold text-xs ${!n.isRead ? 'text-slate-900 font-extrabold' : 'text-slate-700'}`}>
+                          {n.title}
+                        </span>
+                        <SeverityBadge severity={n.severity} showIcon={false} />
+                      </div>
+                      <p className="text-[11px] text-slate-500 line-clamp-1">{n.description}</p>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                        <span>{n.id}</span>
+                        <span>{n.timeAgo}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            {notifications.length > 0 && (
+              <div className="p-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                <button
+                  onClick={clearAll}
+                  className="hover:text-rose-600 font-semibold px-2 py-1 rounded transition"
+                >
+                  Clear History
+                </button>
+                <span className="text-slate-400 font-mono text-[10px]">Real-Time Feed</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </header>
   );

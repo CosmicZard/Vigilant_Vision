@@ -12,7 +12,7 @@ from app.database.connection import SessionLocal
 from app.database.models import Video, Detection, TrafficMetric, Camera
 from app.database.repositories import VideoRepository
 from app.services.yolo_detector import get_yolo_detector
-from app.services.tracker import CentroidTracker
+from app.services.tracker import CentroidTracker, compute_iou
 from app.services.traffic_service import TrafficAnalyzer
 from app.services.behavior_service import BehaviorAnalyzer
 from app.services.road_defect_service import RoadDefectAnalyzer
@@ -95,23 +95,27 @@ class VideoProcessor:
                 # 1. Object Detection (YOLOv8)
                 detections = detector.detect_objects(frame)
 
-                # Persist sample detection records to DB (e.g. key frames)
-                if frame_num % (frame_skip * 5) == 0:
-                    for det in detections[:6]:
-                        det_record = Detection(
-                            detection_id=f"DET-{uuid.uuid4().hex[:8]}",
-                            video_id=self.video_id,
-                            frame_number=frame_num,
-                            timestamp=timestamp_sec,
-                            object_type=det["class_name"],
-                            confidence=det["confidence"],
-                            bounding_box=json.dumps(det["bbox"]),
-                            track_id=None
-                        )
-                        db.add(det_record)
-
                 # 2. Multi-Object Tracking
                 tracks = tracker.update(detections, frame_num, timestamp_sec)
+
+                # Persist detection bounding boxes for frontend AI canvas HUD playback
+                for det in detections:
+                    # Match track_id if available
+                    matched_track = next(
+                        (t for t in tracks if getattr(t, "class_name", None) == det.get("class_name") and compute_iou(getattr(t, "bbox", [0, 0, 0, 0]), det.get("bbox", [0, 0, 0, 0])) > 0.4),
+                        None
+                    )
+                    det_record = Detection(
+                        detection_id=f"DET-{uuid.uuid4().hex[:8]}",
+                        video_id=self.video_id,
+                        frame_number=frame_num,
+                        timestamp=round(timestamp_sec, 2),
+                        object_type=det.get("display_name", det.get("class_name", "object")),
+                        confidence=det.get("confidence", 0.8),
+                        bounding_box=json.dumps(det.get("bbox", [0, 0, 0, 0])),
+                        track_id=getattr(matched_track, "track_id", None) if matched_track else None
+                    )
+                    db.add(det_record)
 
                 # 3. Traffic Analysis & Periodic Metric Logging
                 traffic_stats = traffic_analyzer.analyze_traffic(tracks, height, width)

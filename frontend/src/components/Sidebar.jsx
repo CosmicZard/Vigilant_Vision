@@ -7,7 +7,8 @@ import {
   BarChart3,
   Camera,
   FolderArchive,
-  CheckCircle2
+  CheckCircle2,
+  BrainCircuit
 } from 'lucide-react';
 
 export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0 }) {
@@ -17,6 +18,7 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
     { id: 'videos', label: 'Video Studio', icon: Video },
     { id: 'map', label: 'GIS Road Map', icon: MapPin },
     { id: 'analytics', label: 'Civic Analytics', icon: BarChart3 },
+    { id: 'train', label: 'Train AI Model', icon: BrainCircuit },
     { id: 'cameras', label: 'Surveillance Nodes', icon: Camera },
     { id: 'datasets', label: 'Scenario Simulator', icon: FolderArchive },
   ];
@@ -61,7 +63,7 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
         <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-2 text-xs">
           <div className="flex items-center justify-between text-emerald-800 font-bold">
             <span>Detection Suite</span>
-            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">5/5 Active</span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-extrabold">3/3 Active</span>
           </div>
           <div className="space-y-1 text-[11px] text-slate-600">
             <div className="flex items-center gap-1.5">
@@ -74,15 +76,7 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
             </div>
             <div className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Missing Traffic Lights</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Missing Sign Boards</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Night Streetlight Blackouts</span>
+              <span>Waterlogging & Flooding</span>
             </div>
           </div>
         </div>
