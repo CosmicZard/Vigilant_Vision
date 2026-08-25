@@ -48,25 +48,40 @@ class EvidenceGenerator:
             x1, y1 = max(0, x1), max(0, y1)
             x2, y2 = min(w - 1, x2), min(h - 1, y2)
 
-            # Target Box with double border
-            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 3)
-            # Corner markers
-            corner_len = min(20, (x2 - x1) // 3, (y2 - y1) // 3)
+            # Target Box with thicker double border for clarity
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), (255, 255, 255), 6) # Outer white border
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), color, 4)           # Inner color border
+            
+            # Semi-transparent overlay inside the box
+            overlay = annotated.copy()
+            cv2.rectangle(overlay, (x1, y1), (x2, y2), color, -1)
+            cv2.addWeighted(overlay, 0.25, annotated, 0.75, 0, annotated)
+
+            # Corner markers (thicker)
+            corner_len = min(25, (x2 - x1) // 3, (y2 - y1) // 3)
             if corner_len > 0:
                 # Top-left
+                cv2.line(annotated, (x1, y1), (x1 + corner_len, y1), (0, 0, 0), 8)
                 cv2.line(annotated, (x1, y1), (x1 + corner_len, y1), (255, 255, 255), 4)
+                cv2.line(annotated, (x1, y1), (x1, y1 + corner_len), (0, 0, 0), 8)
                 cv2.line(annotated, (x1, y1), (x1, y1 + corner_len), (255, 255, 255), 4)
                 # Bottom-right
+                cv2.line(annotated, (x2, y2), (x2 - corner_len, y2), (0, 0, 0), 8)
                 cv2.line(annotated, (x2, y2), (x2 - corner_len, y2), (255, 255, 255), 4)
+                cv2.line(annotated, (x2, y2), (x2, y2 - corner_len), (0, 0, 0), 8)
                 cv2.line(annotated, (x2, y2), (x2, y2 - corner_len), (255, 255, 255), 4)
 
-            # Floating Tag above box
+            # Floating Tag above box (Bolder and Larger)
             tag = f"{event_type.replace('_', ' ')} [{severity}]"
-            font = cv2.FONT_HERSHEY_SIMPLEX
-            (tw, th), _ = cv2.getTextSize(tag, font, 0.6, 2)
-            tag_y1 = max(0, y1 - th - 10)
+            font = cv2.FONT_HERSHEY_DUPLEX
+            (tw, th), _ = cv2.getTextSize(tag, font, 0.8, 2)
+            tag_y1 = max(0, y1 - th - 15)
+            # Tag background shadow
+            cv2.rectangle(annotated, (x1, tag_y1), (x1 + tw + 14, y1), (0, 0, 0), -1)
+            # Tag color background
             cv2.rectangle(annotated, (x1, tag_y1), (x1 + tw + 10, y1), color, -1)
-            cv2.putText(annotated, tag, (x1 + 5, y1 - 5), font, 0.6, (255, 255, 255), 2, cv2.LINE_AA)
+            # Tag text
+            cv2.putText(annotated, tag, (x1 + 5, y1 - 6), font, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
 
         # 2. Draw Top HUD Banner
         banner_h = 44

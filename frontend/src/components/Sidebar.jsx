@@ -18,7 +18,6 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
     { id: 'videos', label: 'Video Studio', icon: Video },
     { id: 'map', label: 'GIS Road Map', icon: MapPin },
     { id: 'analytics', label: 'Civic Analytics', icon: BarChart3 },
-    { id: 'train', label: 'Train AI Model', icon: BrainCircuit },
     { id: 'cameras', label: 'Surveillance Nodes', icon: Camera },
     { id: 'datasets', label: 'Scenario Simulator', icon: FolderArchive },
   ];

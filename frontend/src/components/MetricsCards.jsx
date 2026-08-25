@@ -32,7 +32,7 @@ export default function MetricsCards({ summary = {} }) {
       subtext: `${resolvedEvents} resolved / audited`,
       icon: Activity,
       valueColor: 'text-slate-900',
-      gradient: 'from-sky-500/[0.08] via-white to-white',
+
       borderColor: 'border-sky-200/90 hover:border-sky-300',
       iconContainer: 'bg-sky-50 text-sky-600 border-sky-100/80',
       glowColor: 'bg-sky-500/10',
@@ -46,7 +46,7 @@ export default function MetricsCards({ summary = {} }) {
       subtext: 'Potholes, missing lights & hazards',
       icon: AlertTriangle,
       valueColor: totalHighPriority > 0 ? 'text-amber-600' : 'text-slate-900',
-      gradient: 'from-amber-500/[0.08] via-white to-white',
+
       borderColor: 'border-amber-200/90 hover:border-amber-300',
       iconContainer: 'bg-amber-50 text-amber-600 border-amber-100/80',
       glowColor: 'bg-amber-500/10',
@@ -61,7 +61,7 @@ export default function MetricsCards({ summary = {} }) {
       subtext: 'Dispatched to civic maintenance',
       icon: CheckCircle2,
       valueColor: 'text-emerald-600',
-      gradient: 'from-emerald-500/[0.08] via-white to-white',
+
       borderColor: 'border-emerald-200/90 hover:border-emerald-300',
       iconContainer: 'bg-emerald-50 text-emerald-600 border-emerald-100/80',
       glowColor: 'bg-emerald-500/10',
@@ -75,7 +75,7 @@ export default function MetricsCards({ summary = {} }) {
       subtext: 'Road & border surveillance nodes',
       icon: Camera,
       valueColor: 'text-slate-900',
-      gradient: 'from-cyan-500/[0.08] via-white to-white',
+
       borderColor: 'border-cyan-200/90 hover:border-cyan-300',
       iconContainer: 'bg-cyan-50 text-cyan-600 border-cyan-100/80',
       glowColor: 'bg-cyan-500/10',
@@ -96,7 +96,7 @@ export default function MetricsCards({ summary = {} }) {
           : congestion === 'MODERATE'
           ? 'text-amber-600'
           : 'text-emerald-600',
-      gradient: 'from-indigo-500/[0.08] via-white to-white',
+
       borderColor: 'border-indigo-200/90 hover:border-indigo-300',
       iconContainer: 'bg-indigo-50 text-indigo-600 border-indigo-100/80',
       glowColor: 'bg-indigo-500/10',
@@ -110,7 +110,7 @@ export default function MetricsCards({ summary = {} }) {
         return (
           <div
             key={card.id}
-            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${card.gradient} ${card.borderColor} p-4 sm:p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md shadow-xs flex flex-col justify-between min-h-[148px] group`}
+            className={`relative overflow-hidden rounded-2xl border bg-white ${card.borderColor} p-4 sm:p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md shadow-xs flex flex-col justify-between min-h-[148px] group`}
           >
             {/* Top background subtle radial aura */}
             <div

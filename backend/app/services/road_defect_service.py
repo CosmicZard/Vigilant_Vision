@@ -96,6 +96,30 @@ class RoadDefectAnalyzer:
                     }
                 })
 
+            elif cat in ["road_defect", "infrastructure"] and class_name in [
+                "pothole", "missing traffic light", "missing_traffic_light",
+                "missing sign board", "missing_sign_board", "water logging", "water_logging"
+            ]:
+                # Custom model defect detections
+                evt_type = class_name.replace(" ", "_").upper()
+                if "POTHOLE" in evt_type:
+                    evt_type = "POTHOLE_DETECTED"
+                elif "WATER" in evt_type:
+                    evt_type = "WATERLOGGING_DETECTED"
+                
+                anomalies.append({
+                    "event_type": evt_type,
+                    "severity": "CRITICAL",
+                    "object_id": f"DEFECT-{bx1}_{by1}",
+                    "object_type": class_name,
+                    "bbox": [bx1, by1, bx2, by2],
+                    "description": f"Priority Hazard Detected: {det.get('display_name', class_name)} (conf: {det.get('confidence', 0.8):.2f})",
+                    "metadata": {
+                        "confidence": det.get("confidence"),
+                        "source": "yolo_model"
+                    }
+                })
+
         # -------------------------------------------------------------
         # 1. POTHOLE DETECTION (Dark asphalt depressions & craters)
         # -------------------------------------------------------------
@@ -122,7 +146,7 @@ class RoadDefectAnalyzer:
                     abs_y2 = abs_y1 + ch
                     anomalies.append({
                         "event_type": "POTHOLE_DETECTED",
-                        "severity": "HIGH" if area > 1800 else "MEDIUM",
+                        "severity": "CRITICAL" if area > 1800 else "HIGH",
                         "object_id": f"POTH-{x}_{abs_y1}",
                         "object_type": "pothole",
                         "bbox": [x, abs_y1, x + cw, abs_y2],
@@ -199,7 +223,7 @@ class RoadDefectAnalyzer:
                     abs_wy2 = abs_wy1 + wch
                     anomalies.append({
                         "event_type": "WATERLOGGING_DETECTED",
-                        "severity": "HIGH" if w_area > 2500 else "MEDIUM",
+                        "severity": "CRITICAL" if w_area > 2500 else "HIGH",
                         "object_id": f"WTR-{wx}_{abs_wy1}",
                         "object_type": "waterlogging",
                         "bbox": [wx, abs_wy1, wx + wcw, abs_wy2],

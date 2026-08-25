@@ -57,6 +57,15 @@ class YOLODetector:
         "cow": ("animal_hazard", "Livestock / Cow"),
         "elephant": ("animal_hazard", "Wildlife Hazard"),
         "bear": ("animal_hazard", "Wildlife Hazard"),
+        
+        # Priority Smart Road Defects
+        "pothole": ("road_defect", "Pothole"),
+        "missing traffic light": ("infrastructure", "Missing Traffic Light"),
+        "missing_traffic_light": ("infrastructure", "Missing Traffic Light"),
+        "missing sign board": ("infrastructure", "Missing Sign Board"),
+        "missing_sign_board": ("infrastructure", "Missing Sign Board"),
+        "water logging": ("road_defect", "Water Logging"),
+        "water_logging": ("road_defect", "Water Logging"),
     }
 
     def __init__(self, model_name: Optional[str] = None):

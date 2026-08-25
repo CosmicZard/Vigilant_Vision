@@ -29,6 +29,7 @@ export default function VideoPlayer({ video, events = [], onSelectEvent }) {
   const [activeOverlayEvent, setActiveOverlayEvent] = useState(null);
   const [isBuffering, setIsBuffering] = useState(false);
   const [videoError, setVideoError] = useState(null);
+  const [fallbackTriggered, setFallbackTriggered] = useState(false);
 
   // AI Detections Overlay State
   const [detections, setDetections] = useState([]);
@@ -41,6 +42,7 @@ export default function VideoPlayer({ video, events = [], onSelectEvent }) {
     setCurrentTime(0);
     setVideoError(null);
     setIsBuffering(false);
+    setFallbackTriggered(false);
 
     if (video?.video_id) {
       VideosAPI.detections(video.video_id)
@@ -169,10 +171,13 @@ export default function VideoPlayer({ video, events = [], onSelectEvent }) {
           onPause={() => setIsPlaying(false)}
           onCanPlay={() => setIsBuffering(false)}
           onError={(e) => {
-            console.warn('Stream error, attempting static path fallback...');
-            if (videoRef.current && videoRef.current.src !== staticFallbackUrl) {
-              videoRef.current.src = staticFallbackUrl;
-              videoRef.current.load();
+            if (!fallbackTriggered) {
+              console.warn('Stream error, attempting static path fallback...');
+              setFallbackTriggered(true);
+              if (videoRef.current) {
+                videoRef.current.src = staticFallbackUrl;
+                videoRef.current.load();
+              }
             } else {
               setVideoError('Unable to decode video codec. Ensure MP4/H.264 format.');
             }

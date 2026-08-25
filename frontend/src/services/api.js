@@ -31,6 +31,7 @@ export const EventsAPI = {
   get: (eventId) => api.get(`/events/${eventId}`),
   update: (eventId, data) => api.patch(`/events/${eventId}`, data),
   addReview: (eventId, reviewData) => api.post(`/events/${eventId}/review`, reviewData),
+  generateReport: (eventId) => api.post(`/events/${eventId}/report`),
 };
 
 export const CamerasAPI = {

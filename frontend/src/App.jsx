@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import EvidenceViewer from './components/EvidenceViewer';
-import ToastNotification from './components/ToastNotification';
 import { NotificationProvider } from './context/NotificationContext';
 
 // Pages
@@ -13,7 +12,6 @@ import MapView from './pages/MapView';
 import Analytics from './pages/Analytics';
 import Cameras from './pages/Cameras';
 import Datasets from './pages/Datasets';
-import TrainAI from './pages/TrainAI';
 
 import { MetricsAPI } from './services/api';
 
@@ -50,8 +48,7 @@ export default function App() {
   return (
     <NotificationProvider onSelectEvent={handleSelectEvent}>
       <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col selection:bg-sky-500 selection:text-white font-sans relative">
-        {/* Floating Real-time Toast Notifications */}
-        <ToastNotification onSelectEvent={handleSelectEvent} />
+        {/* Floating Real-time Toast Notifications removed */}
 
         {/* Top Navbar */}
         <Navbar
@@ -99,10 +96,6 @@ export default function App() {
 
             {activeTab === 'analytics' && (
               <Analytics />
-            )}
-
-            {activeTab === 'train' && (
-              <TrainAI />
             )}
 
             {activeTab === 'cameras' && (

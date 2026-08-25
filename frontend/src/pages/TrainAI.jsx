@@ -273,8 +273,8 @@ export default function TrainAI() {
               </div>
               <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
                 <div
-                  style={{ width: `${Math.max(4, trainingState.progress_pct || 0)}%` }}
-                  className="h-full bg-gradient-to-r from-sky-500 to-emerald-500 rounded-full transition-all duration-300"
+                  className="h-full bg-sky-500 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.round(trainingState.progress_pct || 0)}%` }}
                 />
               </div>
             </div>

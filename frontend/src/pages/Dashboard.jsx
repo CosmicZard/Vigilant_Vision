@@ -26,7 +26,7 @@ import MetricsCards from '../components/MetricsCards';
 import SeverityBadge from '../components/SeverityBadge';
 import StatusBadge from '../components/StatusBadge';
 import LeafletMap from '../components/LeafletMap';
-import { MetricsAPI, EventsAPI, CamerasAPI, DatasetsAPI } from '../services/api';
+import { MetricsAPI, EventsAPI, CamerasAPI, DatasetsAPI, VideosAPI } from '../services/api';
 
 export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVideo }) {
   const [summary, setSummary] = useState({});
@@ -70,6 +70,7 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
     try {
       setGenerating(true);
       const res = await DatasetsAPI.generateSynthetic(type, 8, 'CAM-01');
+      await VideosAPI.process(res.data.video_id, 'CAM-01');
       await fetchData();
       if (onSelectVideo) onSelectVideo(res.data);
     } catch (err) {
@@ -189,7 +190,7 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
           <button
             onClick={() => handleQuickDemo('all_inclusive')}
             disabled={generating}
-            className="p-3.5 rounded-2xl bg-gradient-to-tr from-sky-50 to-emerald-50 hover:from-sky-100 hover:to-emerald-100 text-slate-900 border border-sky-200 transition text-left space-y-1 group"
+            className="p-3.5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-slate-900 border border-sky-200 transition text-left space-y-1 group"
           >
             <div className="flex items-center justify-between">
               <Sparkles className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />

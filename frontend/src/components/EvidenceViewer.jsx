@@ -51,6 +51,19 @@ export default function EvidenceViewer({ event, onClose, onReviewSubmitted }) {
     }
   };
 
+  const handleGenerateReport = async () => {
+    try {
+      setIsSubmitting(true);
+      const res = await EventsAPI.generateReport(detailedEvent.event_id);
+      alert(`Success: ${res.data.message}\nReport URL: ${res.data.report_url}`);
+    } catch (err) {
+      console.error('Error generating report:', err);
+      alert('Failed to generate report.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] relative z-10">
@@ -244,6 +257,16 @@ export default function EvidenceViewer({ event, onClose, onReviewSubmitted }) {
                   <span>{isSubmitting ? 'Recording Audit...' : 'Submit Authority Decision'}</span>
                 </button>
               </form>
+
+              <button
+                type="button"
+                onClick={handleGenerateReport}
+                disabled={isSubmitting}
+                className="w-full mt-3 bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition disabled:opacity-50"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Generate Report & Send to Authorities</span>
+              </button>
 
               {detailedEvent.reviews && detailedEvent.reviews.length > 0 && (
                 <div className="mt-3 pt-2.5 border-t border-slate-200 space-y-2">

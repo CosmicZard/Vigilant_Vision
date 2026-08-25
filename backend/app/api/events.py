@@ -113,3 +113,57 @@ def add_review(event_id: str, review_in: EventReviewCreate, db: Session = Depend
 
     review = EventRepository.add_review(db, event_id, review_in)
     return EventReviewResponse.model_validate(review)
+
+from datetime import datetime
+from app.config import settings
+
+@router.post("/{event_id}/report")
+def generate_and_send_report(event_id: str, db: Session = Depends(get_db)):
+    event = EventRepository.get(db, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    reports_dir = settings.EVIDENCE_DIR / "reports"
+    reports_dir.mkdir(exist_ok=True)
+    report_filename = f"{event_id}_Authority_Report.txt"
+    report_path = reports_dir / report_filename
+
+    meta = event.meta_info if event.meta_info else "None"
+    
+    report_content = f"""==================================================
+VIGILANT VISION - CIVIC AUTHORITY DISPATCH REPORT
+==================================================
+Report ID: REP-{event_id}
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+[ DEFECT DETAILS ]
+Event ID:      {event.event_id}
+Type:          {event.event_type}
+Severity:      {event.severity}
+Status:        {event.status}
+Description:   {event.description}
+
+[ LOCATION & TELEMETRY ]
+Camera Node:   {event.camera_id}
+Location:      {event.location}
+GPS:           {event.latitude}, {event.longitude}
+Timestamp:     {event.timestamp}
+
+[ EVIDENCE ]
+Snapshot Path: {event.evidence_path}
+
+[ METADATA ]
+{meta}
+
+==================================================
+STATUS: Dispatched to Municipal Authorities automatically.
+==================================================
+"""
+    
+    with open(report_path, "w") as f:
+        f.write(report_content)
+        
+    return {
+        "message": "Report generated and sent to authorities successfully.",
+        "report_url": f"evidence/reports/{report_filename}"
+    }

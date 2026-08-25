@@ -89,7 +89,7 @@ export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
     <header className="bg-white border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-sm">
       {/* Brand Identity */}
       <div className="flex items-center gap-3.5">
-        <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-500 flex items-center justify-center shadow-md shadow-sky-500/20 text-white">
+        <div className="h-10 w-10 rounded-xl bg-sky-600 flex items-center justify-center shadow-md shadow-sky-500/20 text-white">
           <Shield className="w-5 h-5" />
         </div>
         <div>

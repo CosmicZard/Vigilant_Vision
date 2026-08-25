@@ -109,7 +109,7 @@ export default function Datasets({ onVideoGenerated }) {
       {/* Synthetic Scenario Generator Station */}
       <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-500 text-white shadow-md shadow-sky-500/20">
+          <div className="p-2.5 rounded-2xl bg-sky-600 text-white shadow-md shadow-sky-500/20">
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
