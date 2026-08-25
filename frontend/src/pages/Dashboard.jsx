@@ -102,12 +102,20 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Top Banner with Quick Refresh & Live State */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200/90 rounded-3xl p-6 shadow-xs">
-        <div>
+      {/* Top Banner with Quick Refresh & Live State + Animated Wave SVG */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-6 shadow-xs relative overflow-hidden group parallax-card">
+        {/* Subtle background SVG soundwave / radar morphing pattern */}
+        <div className="absolute right-0 top-0 bottom-0 w-72 pointer-events-none opacity-20 flex items-center justify-end pr-4">
+          <svg className="w-full h-24 text-sky-500 animate-pulse" viewBox="0 0 200 40" fill="none" stroke="currentColor">
+            <path d="M 0 20 Q 25 5, 50 20 T 100 20 T 150 20 T 200 20" strokeWidth="2" strokeLinecap="round" />
+            <path d="M 0 20 Q 25 35, 50 20 T 100 20 T 150 20 T 200 20" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+          </svg>
+        </div>
+
+        <div className="relative z-10">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">Authority Command Center</h1>
-            <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5">
+            <span className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Live Monitoring
             </span>
@@ -117,7 +125,7 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative z-10">
           {lastSyncTime && (
             <div className="text-[11px] text-slate-400 font-mono hidden sm:block">
               Updated: <strong className="text-slate-600 font-bold">{lastSyncTime}</strong>
@@ -126,7 +134,7 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
           <button
             onClick={fetchData}
             disabled={loading}
-            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2.5 rounded-2xl text-xs font-bold border border-slate-200 shadow-xs transition"
+            className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 text-slate-700 px-4 py-2.5 rounded-2xl text-xs font-bold border border-slate-200 shadow-2xs transition-all duration-200 active:scale-95"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-sky-600' : ''}`} />
             <span>Sync Live Feed</span>
@@ -134,8 +142,46 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards with Parallax Depth */}
       <MetricsCards summary={summary} />
+
+      {/* Horizontal Scrolling Real-Time Alert Telemetry Ribbon */}
+      {recentEvents.length > 0 && (
+        <div className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-3xl p-4 shadow-xs space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+              <Radio className="w-3.5 h-3.5 text-sky-600 animate-pulse" />
+              Live Telemetry Ticker
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium">Scroll horizontally →</span>
+          </div>
+
+          {/* Horizontal Snap Scroll Carousel */}
+          <div className="flex gap-3 overflow-x-auto no-scrollbar horizontal-scroll-snap pb-1.5 pt-0.5">
+            {recentEvents.map((evt) => (
+              <div
+                key={evt.event_id}
+                onClick={() => onSelectEvent(evt)}
+                className="min-w-[280px] max-w-[280px] p-3 rounded-2xl bg-slate-50/90 hover:bg-white border border-slate-200/80 hover:border-sky-300 hover:shadow-md transition-all duration-200 cursor-pointer space-y-2 group"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-bold text-slate-400 group-hover:text-sky-700 transition-colors">
+                    {evt.event_id}
+                  </span>
+                  <SeverityBadge severity={evt.severity} size="sm" showIcon={false} />
+                </div>
+                <div className="font-extrabold text-xs text-slate-900 line-clamp-1">
+                  {evt.event_type.replace(/_/g, ' ')}
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-slate-500 font-medium pt-1 border-t border-slate-200/60">
+                  <span>{evt.camera_id || 'CAM-01'}</span>
+                  <span>{evt.timestamp || '00:00.000'}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quick Test Demo Chips Bar */}
       <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs space-y-3">
@@ -147,60 +193,62 @@ export default function Dashboard({ onSelectEvent, onViewAllEvents, onSelectVide
           <span className="text-[11px] text-slate-400">Instantly synthesizes video & executes AI detection</span>
         </div>
 
+
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
           <button
             onClick={() => handleQuickDemo('potholes')}
             disabled={generating}
-            className="p-3.5 rounded-2xl bg-amber-50/70 hover:bg-amber-100/80 text-amber-900 border border-amber-200 transition text-left space-y-1 group"
+            className="p-3.5 rounded-2xl bg-amber-50/70 hover:bg-amber-100/90 text-amber-900 border border-amber-200/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 text-left space-y-1 group"
           >
             <div className="flex items-center justify-between">
-              <AlertOctagon className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-bold uppercase bg-white/80 px-1.5 py-0.5 rounded text-amber-700 border border-amber-200">Test 1</span>
+              <AlertOctagon className="w-4 h-4 text-amber-600 transition-transform duration-200 group-hover:scale-125 group-hover:rotate-6" />
+              <span className="text-[10px] font-extrabold uppercase bg-white/90 px-2 py-0.5 rounded-full text-amber-700 border border-amber-200 shadow-2xs">Test 1</span>
             </div>
-            <div className="font-extrabold text-xs text-slate-900">Potholes</div>
+            <div className="font-extrabold text-xs text-slate-900 group-hover:text-amber-950">Potholes</div>
             <div className="text-[10px] text-slate-500 leading-tight">Asphalt craters & depth</div>
           </button>
 
           <button
             onClick={() => handleQuickDemo('garbage')}
             disabled={generating}
-            className="p-3.5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/80 text-emerald-900 border border-emerald-200 transition text-left space-y-1 group"
+            className="p-3.5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/90 text-emerald-900 border border-emerald-200/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 text-left space-y-1 group"
           >
             <div className="flex items-center justify-between">
-              <Trash2 className="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-bold uppercase bg-white/80 px-1.5 py-0.5 rounded text-emerald-700 border border-emerald-200">Test 2</span>
+              <Trash2 className="w-4 h-4 text-emerald-600 transition-transform duration-200 group-hover:scale-125 group-hover:-rotate-6" />
+              <span className="text-[10px] font-extrabold uppercase bg-white/90 px-2 py-0.5 rounded-full text-emerald-700 border border-emerald-200 shadow-2xs">Test 2</span>
             </div>
-            <div className="font-extrabold text-xs text-slate-900">Garbage & Litter</div>
+            <div className="font-extrabold text-xs text-slate-900 group-hover:text-emerald-950">Garbage & Litter</div>
             <div className="text-[10px] text-slate-500 leading-tight">Roadside waste piles</div>
           </button>
 
           <button
             onClick={() => handleQuickDemo('waterlogging')}
             disabled={generating}
-            className="p-3.5 rounded-2xl bg-sky-50/70 hover:bg-sky-100/80 text-sky-900 border border-sky-200 transition text-left space-y-1 group"
+            className="p-3.5 rounded-2xl bg-sky-50/70 hover:bg-sky-100/90 text-sky-900 border border-sky-200/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 text-left space-y-1 group"
           >
             <div className="flex items-center justify-between">
-              <Droplets className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-bold uppercase bg-white/80 px-1.5 py-0.5 rounded text-sky-700 border border-sky-200">Test 3</span>
+              <Droplets className="w-4 h-4 text-sky-600 transition-transform duration-200 group-hover:scale-125 group-hover:translate-y-[-2px]" />
+              <span className="text-[10px] font-extrabold uppercase bg-white/90 px-2 py-0.5 rounded-full text-sky-700 border border-sky-200 shadow-2xs">Test 3</span>
             </div>
-            <div className="font-extrabold text-xs text-slate-900">Waterlogging</div>
+            <div className="font-extrabold text-xs text-slate-900 group-hover:text-sky-950">Waterlogging</div>
             <div className="text-[10px] text-slate-500 leading-tight">Standing water & puddles</div>
           </button>
 
           <button
             onClick={() => handleQuickDemo('all_inclusive')}
             disabled={generating}
-            className="p-3.5 rounded-2xl bg-sky-50 hover:bg-sky-100 text-slate-900 border border-sky-200 transition text-left space-y-1 group"
+            className="p-3.5 rounded-2xl bg-gradient-to-br from-sky-50 to-indigo-50/70 hover:from-sky-100 hover:to-indigo-100 text-slate-900 border border-sky-200/90 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 text-left space-y-1 group"
           >
             <div className="flex items-center justify-between">
-              <Sparkles className="w-4 h-4 text-sky-600 group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-bold uppercase bg-white/80 px-1.5 py-0.5 rounded text-sky-700 border border-sky-200">Combined</span>
+              <Sparkles className="w-4 h-4 text-sky-600 transition-transform duration-200 group-hover:scale-125 group-hover:rotate-12" />
+              <span className="text-[10px] font-extrabold uppercase bg-white/90 px-2 py-0.5 rounded-full text-sky-700 border border-sky-200 shadow-2xs">Combined</span>
             </div>
-            <div className="font-extrabold text-xs text-slate-900">All Scenarios</div>
+            <div className="font-extrabold text-xs text-slate-900 group-hover:text-indigo-950">All Scenarios</div>
             <div className="text-[10px] text-slate-500 leading-tight">Full civic defect suite</div>
           </button>
         </div>
       </div>
+
 
       {/* Main Command Center Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

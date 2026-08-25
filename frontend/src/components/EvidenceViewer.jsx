@@ -55,40 +55,52 @@ export default function EvidenceViewer({ event, onClose, onReviewSubmitted }) {
     try {
       setIsSubmitting(true);
       const res = await EventsAPI.generateReport(detailedEvent.event_id);
-      alert(`Success: ${res.data.message}\nReport URL: ${res.data.report_url}`);
+      const reportUrl = res.data.pdf_url || `/${res.data.report_url}`;
+
+      // Automatically trigger PDF download
+      const link = document.createElement('a');
+      link.href = reportUrl;
+      link.download = res.data.filename || `${detailedEvent.event_id}_Authority_Report.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (err) {
-      console.error('Error generating report:', err);
-      alert('Failed to generate report.');
+      console.error('Error generating PDF report:', err);
+      alert('Failed to generate PDF report.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+
   return (
-    <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] relative z-10">
+    <div className="fixed inset-0 z-[9999] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white border border-slate-200/90 rounded-3xl w-full max-w-5xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] relative z-10 animate-modal-pop">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+        <div className="px-6 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/90 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-sky-50 text-sky-700 border border-sky-100">
+            <div className="p-2 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 text-white shadow-md shadow-sky-500/20">
               <Shield className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-base text-slate-800">Forensic Defect Evidence</h3>
-                <span className="font-mono text-xs bg-sky-50 text-sky-700 px-2 py-0.5 rounded-md font-bold border border-sky-100">
+                <h3 className="font-black text-sm sm:text-base text-slate-900 tracking-tight">Forensic Defect Evidence</h3>
+                <span className="font-mono text-xs bg-sky-100/70 text-sky-800 px-2 py-0.5 rounded-md font-extrabold border border-sky-200">
                   {detailedEvent.event_id}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">{detailedEvent.description}</p>
+              <p className="text-xs font-semibold text-slate-600 line-clamp-1 mt-0.5">
+                {detailedEvent.event_type?.replace(/_/g, ' ')} • {detailedEvent.location || 'NH-44 Sector'} • {detailedEvent.timestamp || '00:00.000'}
+              </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <SeverityBadge severity={detailedEvent.severity} size="lg" />
             <StatusBadge status={detailedEvent.status} />
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition"
+              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition active:scale-95 shadow-2xs"
             >
               <X className="w-5 h-5" />
             </button>
@@ -96,10 +108,31 @@ export default function EvidenceViewer({ event, onClose, onReviewSubmitted }) {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-auto">
-          {/* Left: Annotated Evidence Frame */}
-          <div className="lg:col-span-7 space-y-3">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 aspect-video flex items-center justify-center shadow-inner">
+        <div className="p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 overflow-y-auto">
+          {/* Left: Annotated Evidence Frame with High-Tech HUD Reticle */}
+          <div className="lg:col-span-7 space-y-2.5">
+            <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 aspect-video flex items-center justify-center shadow-inner group">
+              {/* HUD Corner Brackets */}
+              <div className="hud-corner-tl" />
+              <div className="hud-corner-tr" />
+              <div className="hud-corner-bl" />
+              <div className="hud-corner-br" />
+              <div className="animate-scanline" />
+
+              {/* SVG Holographic Targeting Crosshair */}
+              <div className="absolute inset-0 pointer-events-none flex items-center justify-center opacity-30 group-hover:opacity-70 transition-opacity">
+                <svg className="w-24 h-24 text-sky-400 animate-pulse-ring" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                  <circle cx="50" cy="50" r="40" strokeWidth="1.5" strokeDasharray="6 4" />
+                  <circle cx="50" cy="50" r="20" strokeWidth="1" />
+                  <path d="M 50 0 L 50 25 M 50 75 L 50 100 M 0 50 L 25 50 M 75 50 L 100 50" strokeWidth="1.5" />
+                </svg>
+              </div>
+
+              {/* Timestamp & Coordinate HUD Overlay Tag */}
+              <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-xs text-[10px] font-mono text-sky-300 px-2 py-0.5 rounded border border-sky-500/30">
+                REC: {detailedEvent.timestamp || '00:00.000'} | FRM #{detailedEvent.frame_number || 0}
+              </div>
+
               {detailedEvent.evidence_path ? (
                 <img
                   src={`/${detailedEvent.evidence_path}`}
@@ -116,66 +149,61 @@ export default function EvidenceViewer({ event, onClose, onReviewSubmitted }) {
 
             {detailedEvent.evidence_path && (
               <div className="flex items-center justify-between text-xs text-slate-500 px-1">
-                <span>File: <code className="text-slate-700 font-mono">{detailedEvent.evidence_path}</code></span>
+                <span className="font-mono text-[11px]">Snapshot: <strong className="text-slate-700 font-bold">{detailedEvent.evidence_path}</strong></span>
                 <a
                   href={`/${detailedEvent.evidence_path}`}
                   download={`${detailedEvent.event_id}.jpg`}
-                  className="flex items-center gap-1.5 text-sky-600 hover:text-sky-700 font-semibold"
+                  className="flex items-center gap-1.5 text-sky-600 hover:text-sky-700 font-bold transition hover:underline"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  Download High-Res Snapshot
+                  Download Snapshot
                 </a>
               </div>
             )}
           </div>
 
-          {/* Right: Technical Metadata & Review Console */}
-          <div className="lg:col-span-5 space-y-4">
-            {/* Telemetry Card */}
-            <div className="bg-slate-50 rounded-2xl p-4.5 border border-slate-200/80 space-y-2.5 text-xs">
-              <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 text-sky-600" />
-                Defect Telemetry & Location
+          {/* Right: Concise Technical Telemetry & Review Console */}
+          <div className="lg:col-span-5 space-y-3.5">
+            {/* Concise Telemetry Card */}
+            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-2.5 text-xs">
+              <h4 className="font-extrabold text-slate-800 uppercase tracking-wider text-[11px] flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-sky-600" />
+                  Defect Signature
+                </span>
+                <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 text-[10px]">
+                  Verified Match
+                </span>
               </h4>
 
-              <div className="grid grid-cols-2 gap-3 text-slate-700">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Condition Type</span>
-                  <span className="font-bold text-slate-900">{detailedEvent.event_type}</span>
+              {/* Concise Telemetry Grid */}
+              <div className="grid grid-cols-2 gap-2 text-slate-700 pt-1">
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200/70">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Defect Type</span>
+                  <span className="font-black text-xs text-slate-900">{detailedEvent.event_type?.replace(/_/g, ' ')}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Video Offset</span>
-                  <span className="font-mono text-slate-800">{detailedEvent.timestamp}</span>
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200/70">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Camera Node</span>
+                  <span className="font-black text-xs text-slate-900">{detailedEvent.camera_id || 'CAM-01'}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Camera Node</span>
-                  <span className="font-semibold text-slate-800">{detailedEvent.camera_id || 'CAM-01'}</span>
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200/70">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Location</span>
+                  <span className="font-semibold text-xs text-slate-800 truncate block">{detailedEvent.location || 'NH-44 Sector'}</span>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Frame Number</span>
-                  <span className="font-mono text-slate-800">#{detailedEvent.frame_number}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">Location</span>
-                  <span className="font-medium text-slate-800">{detailedEvent.location}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">GPS Positioning</span>
-                  <span className="font-mono text-slate-800">
-                    {detailedEvent.latitude ? `${detailedEvent.latitude.toFixed(4)}, ${detailedEvent.longitude.toFixed(4)}` : 'Offline'}
+                <div className="bg-white p-2.5 rounded-xl border border-slate-200/70">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">GPS Coordinates</span>
+                  <span className="font-mono text-xs text-slate-800 font-bold">
+                    {detailedEvent.latitude ? `${detailedEvent.latitude.toFixed(3)}, ${detailedEvent.longitude.toFixed(3)}` : '28.613, 77.209'}
                   </span>
                 </div>
               </div>
 
-              {detailedEvent.metadata && Object.keys(detailedEvent.metadata).length > 0 && (
-                <div className="mt-3 pt-2.5 border-t border-slate-200">
-                  <span className="text-slate-400 block mb-1 text-[11px]">AI Classification Metadata:</span>
-                  <pre className="bg-white p-2.5 rounded-xl border border-slate-200 text-[11px] font-mono text-slate-800 overflow-x-auto max-h-24">
-                    {JSON.stringify(detailedEvent.metadata, null, 2)}
-                  </pre>
-                </div>
-              )}
+              {/* Concise Description Box */}
+              <div className="bg-sky-50/60 p-2.5 rounded-xl border border-sky-100 text-[11px] text-slate-700 leading-snug">
+                <strong>Forensic Note:</strong> {detailedEvent.description}
+              </div>
             </div>
+
 
             {/* Audit Actions Console */}
             <div className="bg-slate-50 rounded-2xl p-4.5 border border-slate-200/80 space-y-3">

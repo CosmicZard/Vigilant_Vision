@@ -29,7 +29,7 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
           <p className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
             Surveillance & Detection
           </p>
-          <nav className="space-y-1">
+          <nav className="space-y-1.5">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -37,18 +37,21 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group relative ${
                     isActive
-                      ? 'bg-sky-50 text-sky-700 border border-sky-200/80 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-gradient-to-r from-sky-50 to-sky-100/60 text-sky-800 border border-sky-200/90 shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50/80 hover:translate-x-1'
                   }`}
                 >
+                  {isActive && (
+                    <span className="absolute left-0 top-2 bottom-2 w-1 bg-sky-600 rounded-r-full shadow-xs" />
+                  )}
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-sky-600' : 'text-slate-400'}`} />
+                    <Icon className={`w-4 h-4 transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-sky-600' : 'text-slate-400'}`} />
                     <span>{item.label}</span>
                   </div>
                   {item.badge > 0 && (
-                    <span className="bg-sky-100 text-sky-700 border border-sky-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    <span className="bg-sky-100 text-sky-700 border border-sky-200 text-[10px] font-black px-2 py-0.5 rounded-full transition-transform group-hover:scale-105">
                       {item.badge}
                     </span>
                   )}
@@ -59,26 +62,30 @@ export default function Sidebar({ activeTab, setActiveTab, unreadEventsCount = 0
         </div>
 
         {/* Civic AI Engines Status */}
-        <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-100 space-y-2 text-xs">
+        <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/30 border border-emerald-200/80 space-y-2.5 text-xs shadow-2xs transition-all duration-200 hover:shadow-xs">
           <div className="flex items-center justify-between text-emerald-800 font-bold">
-            <span>Detection Suite</span>
-            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-extrabold">3/3 Active</span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Detection Suite
+            </span>
+            <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-extrabold shadow-2xs">3/3 Active</span>
           </div>
-          <div className="space-y-1 text-[11px] text-slate-600">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Potholes & Surface Cracks</span>
+          <div className="space-y-1.5 text-[11px] text-slate-600">
+            <div className="flex items-center gap-2 group cursor-default">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Potholes & Surface Cracks</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Garbage & Debris Piles</span>
+            <div className="flex items-center gap-2 group cursor-default">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Garbage & Debris Piles</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>Waterlogging & Flooding</span>
+            <div className="flex items-center gap-2 group cursor-default">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 transition-transform group-hover:scale-110" />
+              <span className="font-medium">Waterlogging & Flooding</span>
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Footer */}

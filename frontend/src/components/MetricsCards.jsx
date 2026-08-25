@@ -110,23 +110,26 @@ export default function MetricsCards({ summary = {} }) {
         return (
           <div
             key={card.id}
-            className={`relative overflow-hidden rounded-2xl border bg-white ${card.borderColor} p-4 sm:p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md shadow-xs flex flex-col justify-between min-h-[148px] group`}
+            className={`relative overflow-hidden rounded-2xl border bg-white ${card.borderColor} p-4 sm:p-4.5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg shadow-2xs flex flex-col justify-between min-h-[148px] group cursor-default`}
           >
             {/* Top background subtle radial aura */}
             <div
-              className={`absolute -top-6 -right-6 w-24 h-24 rounded-full ${card.glowColor} blur-xl pointer-events-none transition-all group-hover:scale-125`}
+              className={`absolute -top-8 -right-8 w-28 h-28 rounded-full ${card.glowColor} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-150 group-hover:opacity-100 opacity-60`}
             />
+
+            {/* Subtle top light sheen on hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
             {/* Top row: Category title + Icon pill */}
             <div className="flex items-start justify-between gap-2 relative z-10">
               <span
-                className="text-[11px] font-bold text-slate-500 uppercase tracking-wider leading-snug line-clamp-1"
+                className="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider leading-snug line-clamp-1 group-hover:text-slate-700 transition-colors"
                 title={card.title}
               >
                 {card.title}
               </span>
               <div
-                className={`p-2 rounded-xl border shrink-0 ${card.iconContainer} shadow-xs transition-transform group-hover:scale-105`}
+                className={`p-2 rounded-xl border shrink-0 ${card.iconContainer} shadow-2xs transition-all duration-300 group-hover:scale-110 group-hover:shadow-xs`}
               >
                 <Icon className="w-4 h-4" />
               </div>
@@ -136,7 +139,7 @@ export default function MetricsCards({ summary = {} }) {
             <div className="mt-2.5 flex items-baseline justify-between gap-2 relative z-10">
               <div className="flex items-center gap-2">
                 <span
-                  className={`font-black tracking-tight ${
+                  className={`font-black tracking-tight transition-transform duration-300 group-hover:scale-105 origin-left ${
                     card.isTextValue ? 'text-xl sm:text-2xl font-black uppercase' : 'text-3xl'
                   } ${card.valueColor}`}
                 >

@@ -129,22 +129,22 @@ export default function Datasets({ onVideoGenerated }) {
               <div
                 key={sc.id}
                 onClick={() => setScenarioType(sc.id)}
-                className={`p-4.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-3 ${
+                className={`p-4.5 rounded-2xl border transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between space-y-3 group ${
                   isSelected
-                    ? 'bg-sky-50/70 border-sky-400 shadow-sm ring-1 ring-sky-300'
-                    : 'bg-slate-50/60 border-slate-200/80 hover:border-slate-300 hover:bg-slate-50'
+                    ? 'bg-gradient-to-br from-sky-50/90 to-sky-100/40 border-sky-400 shadow-md ring-2 ring-sky-300/60'
+                    : 'bg-white border-slate-200/90 hover:border-sky-300 hover:shadow-md'
                 }`}
               >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-white px-2.5 py-0.5 rounded-full text-slate-600 border border-slate-200">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-slate-50 px-2.5 py-0.5 rounded-full text-slate-700 border border-slate-200 shadow-2xs">
                       {sc.badge}
                     </span>
-                    {isSelected && <CheckCircle2 className="w-4 h-4 text-sky-600" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-sky-600 animate-pulse" />}
                   </div>
                   <div className="flex items-center gap-2 pt-1">
-                    <Icon className="w-4 h-4 text-sky-600" />
-                    <h4 className="font-bold text-xs text-slate-900">{sc.title}</h4>
+                    <Icon className="w-4 h-4 text-sky-600 transition-transform duration-200 group-hover:scale-110" />
+                    <h4 className="font-bold text-xs text-slate-900 group-hover:text-sky-950">{sc.title}</h4>
                   </div>
                   <p className="text-[11px] text-slate-500 leading-relaxed">{sc.desc}</p>
                 </div>

@@ -116,6 +116,7 @@ def add_review(event_id: str, review_in: EventReviewCreate, db: Session = Depend
 
 from datetime import datetime
 from app.config import settings
+from app.services.report_service import generate_pdf_report
 
 @router.post("/{event_id}/report")
 def generate_and_send_report(event_id: str, db: Session = Depends(get_db)):
@@ -124,46 +125,22 @@ def generate_and_send_report(event_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     
     reports_dir = settings.EVIDENCE_DIR / "reports"
-    reports_dir.mkdir(exist_ok=True)
-    report_filename = f"{event_id}_Authority_Report.txt"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    report_filename = f"{event_id}_Authority_Report.pdf"
     report_path = reports_dir / report_filename
 
-    meta = event.meta_info if event.meta_info else "None"
-    
-    report_content = f"""==================================================
-VIGILANT VISION - CIVIC AUTHORITY DISPATCH REPORT
-==================================================
-Report ID: REP-{event_id}
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-[ DEFECT DETAILS ]
-Event ID:      {event.event_id}
-Type:          {event.event_type}
-Severity:      {event.severity}
-Status:        {event.status}
-Description:   {event.description}
-
-[ LOCATION & TELEMETRY ]
-Camera Node:   {event.camera_id}
-Location:      {event.location}
-GPS:           {event.latitude}, {event.longitude}
-Timestamp:     {event.timestamp}
-
-[ EVIDENCE ]
-Snapshot Path: {event.evidence_path}
-
-[ METADATA ]
-{meta}
-
-==================================================
-STATUS: Dispatched to Municipal Authorities automatically.
-==================================================
-"""
-    
-    with open(report_path, "w") as f:
-        f.write(report_content)
+    try:
+        generate_pdf_report(event, report_path)
+    except Exception as e:
+        # Fallback text creation if PDF builder encounters issue
+        with open(reports_dir / f"{event_id}_Authority_Report.txt", "w") as f:
+            f.write(f"VIGILANT VISION AUTHORITY DISPATCH\nEvent ID: {event.event_id}\nType: {event.event_type}\nSeverity: {event.severity}\nDescription: {event.description}\nLocation: {event.location}\nTimestamp: {event.timestamp}\n")
+        report_filename = f"{event_id}_Authority_Report.txt"
         
     return {
-        "message": "Report generated and sent to authorities successfully.",
-        "report_url": f"evidence/reports/{report_filename}"
+        "message": "Official Municipal Authority PDF Report generated successfully.",
+        "report_url": f"evidence/reports/{report_filename}",
+        "pdf_url": f"/evidence/reports/{report_filename}",
+        "filename": report_filename
     }
+

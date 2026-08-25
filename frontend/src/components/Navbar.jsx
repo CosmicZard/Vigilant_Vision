@@ -86,16 +86,16 @@ export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
     : notifications;
 
   return (
-    <header className="bg-white border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+    <header className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-xs transition-all">
       {/* Brand Identity */}
-      <div className="flex items-center gap-3.5">
-        <div className="h-10 w-10 rounded-xl bg-sky-600 flex items-center justify-center shadow-md shadow-sky-500/20 text-white">
-          <Shield className="w-5 h-5" />
+      <div className="flex items-center gap-3.5 group cursor-pointer">
+        <div className="h-10 w-10 rounded-2xl bg-gradient-to-tr from-sky-600 to-sky-500 flex items-center justify-center shadow-md shadow-sky-500/25 text-white transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1">
+          <Shield className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-lg tracking-tight text-slate-800">Vigilant Vision</span>
-            <span className="text-[11px] font-bold bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-200">
+            <span className="font-black text-lg tracking-tight text-slate-800 group-hover:text-sky-700 transition-colors">Vigilant Vision</span>
+            <span className="text-[11px] font-bold bg-sky-50 text-sky-700 px-2.5 py-0.5 rounded-full border border-sky-200/80 shadow-2xs">
               Smart Road & Civic AI
             </span>
           </div>
@@ -104,21 +104,21 @@ export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
       </div>
 
       {/* Center Operational Status */}
-      <div className="hidden lg:flex items-center gap-5 bg-slate-50 border border-slate-200/80 px-4 py-1.5 rounded-full text-xs">
+      <div className="hidden lg:flex items-center gap-5 bg-slate-50/80 backdrop-blur-xs border border-slate-200/80 px-4 py-1.5 rounded-full text-xs shadow-2xs transition-all hover:border-slate-300">
         <div className="flex items-center gap-2 text-emerald-700 font-semibold">
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
           </span>
           AI Vision Engine Active
         </div>
         <div className="h-3 w-px bg-slate-200"></div>
         <div className="text-slate-600 flex items-center gap-1.5">
-          <Activity className="w-3.5 h-3.5 text-sky-500" />
+          <Activity className="w-3.5 h-3.5 text-sky-500 animate-pulse" />
           YOLOv8 + Civic Defect Analyzer
         </div>
         <div className="h-3 w-px bg-slate-200"></div>
-        <div className="font-mono text-slate-600 font-medium">
+        <div className="font-mono text-slate-600 font-bold">
           {timeStr || '00:00:00'}
         </div>
       </div>
@@ -130,12 +130,12 @@ export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
           <button
             onClick={() => setShowDemoMenu(!showDemoMenu)}
             disabled={isGenerating}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95 disabled:opacity-50"
           >
             {isGenerating ? (
               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
             ) : (
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
             )}
             <span>{isGenerating ? 'Running AI Detection...' : 'Run Test Scenario'}</span>
             <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
@@ -143,7 +143,7 @@ export default function Navbar({ onSyntheticGenerated, onSelectEvent }) {
 
           {/* Dropdown Menu */}
           {showDemoMenu && (
-            <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50 text-xs space-y-1">
+            <div className="absolute right-0 mt-2 w-68 bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-2xl shadow-xl p-2 z-50 text-xs space-y-1 animate-modal-pop">
               <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Select Civic Defect Test
               </div>

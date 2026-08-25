@@ -94,41 +94,42 @@ export default function Cameras() {
         </div>
       </div>
 
-      {/* Cameras Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Camera Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {cameras.map((cam) => (
           <div
             key={cam.camera_id}
-            className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4 hover:shadow-md transition"
+            className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs hover:shadow-lg hover:border-sky-300 transition-all duration-300 hover:-translate-y-1 space-y-4 group"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-2xl bg-sky-50 text-sky-700 border border-sky-100">
+                <div className="p-2.5 rounded-2xl bg-sky-50 text-sky-600 border border-sky-100 shadow-2xs transition-transform duration-300 group-hover:scale-110">
                   <Camera className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="font-extrabold text-sm text-slate-800 block">{cam.name}</span>
-                  <span className="font-mono text-xs text-sky-700 font-bold">{cam.camera_id}</span>
+                  <h4 className="font-extrabold text-sm text-slate-800 group-hover:text-sky-950 transition-colors">{cam.name}</h4>
+                  <span className="font-mono text-[11px] text-slate-400 font-bold">{cam.camera_id}</span>
                 </div>
               </div>
+
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleDeleteCamera(cam.camera_id)}
-                  className="p-1.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition active:scale-95"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            <div className="space-y-2 text-xs text-slate-600 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/60">
+            <div className="space-y-2 text-xs text-slate-600 bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/70">
               <div className="flex items-center gap-2">
                 <MapPin className="w-3.5 h-3.5 text-slate-400" />
                 <span className="text-slate-700 font-medium">{cam.location}</span>
               </div>
               <div className="flex items-center justify-between font-mono text-[11px] pt-1 border-t border-slate-200 text-slate-500">
                 <span>GPS: {cam.latitude?.toFixed(4)}, {cam.longitude?.toFixed(4)}</span>
-                <span className="bg-white px-2 py-0.5 rounded-md text-sky-700 border border-slate-200">{cam.zone_type}</span>
+                <span className="bg-white px-2 py-0.5 rounded-md text-sky-700 border border-slate-200 shadow-2xs font-bold">{cam.zone_type}</span>
               </div>
             </div>
 
@@ -147,8 +148,8 @@ export default function Cameras() {
 
       {/* Add Camera Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-[9999] bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4 relative z-10">
+        <div className="fixed inset-0 z-[9999] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200/90 rounded-3xl w-full max-w-md p-6 shadow-2xl space-y-4 relative z-10 animate-modal-pop">
             <h3 className="font-extrabold text-base text-slate-800">Register Surveillance Node</h3>
             <form onSubmit={handleCreateCamera} className="space-y-3 text-xs">
               <div>

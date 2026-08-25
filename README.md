@@ -71,8 +71,8 @@ Road CCTV / Dataset Video / RTSP / Synthetic Stream
 | Module | Detection / Event | Technology | Severity |
 | :--- | :--- | :--- | :--- |
 | **Traffic Analytics** | `VEHICLE_DETECTED`, `TRAFFIC_CONGESTION`, `HEAVY_TRAFFIC` | YOLOv8 + Density Engine | LOW / MEDIUM / HIGH |
-| **Road Surface** | `POTHOLE_DETECTED`, `ROAD_DEFECT_DETECTED` | OpenCV Adaptive Contours + Contrast | MEDIUM / HIGH |
-| **Waterlogging** | `WATER_LOGGING` | Specular Reflection & HSV Saturation | MEDIUM / HIGH |
+| **Road Surface** | `POTHOLE_DETECTED`, `GARBAGE_DETECTED` | OpenCV Adaptive Contours & Chrominance | MEDIUM / HIGH |
+| **Waterlogging** | `WATERLOGGING_DETECTED` | Specular Reflection, Puddle Contours & HSV Saturation | MEDIUM / HIGH |
 | **Behavioral** | `WRONG_WAY_DRIVING` | Trajectory Vector vs Lane Direction | HIGH |
 | **Behavioral** | `RASH_DRIVING` | Lateral Swerve Variance & Speed Delta | HIGH |
 | **Behavioral** | `POSSIBLE_COLLISION` | Converging Trajectories & Proximity | HIGH |

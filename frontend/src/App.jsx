@@ -61,7 +61,10 @@ export default function App() {
         />
 
         {/* Main Workspace */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden bg-grid-pattern relative">
+          {/* Ambient top radial gradient glow */}
+          <div className="absolute top-0 left-64 right-0 h-64 bg-radial-glow pointer-events-none" />
+
           {/* Left Sidebar */}
           <Sidebar
             activeTab={activeTab}
@@ -69,50 +72,53 @@ export default function App() {
             unreadEventsCount={summary.total_events || 0}
           />
 
-          {/* Dynamic Center Page */}
-          <main className="flex-1 overflow-y-auto min-h-[calc(100vh-61px)]">
-            {activeTab === 'dashboard' && (
-              <Dashboard
-                onSelectEvent={handleSelectEvent}
-                onViewAllEvents={() => setActiveTab('events')}
-                onSelectVideo={handleSelectVideo}
-              />
-            )}
+          {/* Dynamic Center Page with smooth fade/slide transition */}
+          <main className="flex-1 overflow-y-auto min-h-[calc(100vh-61px)] relative z-10">
+            <div key={activeTab} className="animate-page-enter">
+              {activeTab === 'dashboard' && (
+                <Dashboard
+                  onSelectEvent={handleSelectEvent}
+                  onViewAllEvents={() => setActiveTab('events')}
+                  onSelectVideo={handleSelectVideo}
+                />
+              )}
 
-            {activeTab === 'events' && (
-              <Events onSelectEvent={handleSelectEvent} />
-            )}
+              {activeTab === 'events' && (
+                <Events onSelectEvent={handleSelectEvent} />
+              )}
 
-            {activeTab === 'videos' && (
-              <Videos
-                onSelectEvent={handleSelectEvent}
-                selectedVideoId={selectedVideoId}
-              />
-            )}
+              {activeTab === 'videos' && (
+                <Videos
+                  onSelectEvent={handleSelectEvent}
+                  selectedVideoId={selectedVideoId}
+                />
+              )}
 
-            {activeTab === 'map' && (
-              <MapView onSelectEvent={handleSelectEvent} />
-            )}
+              {activeTab === 'map' && (
+                <MapView onSelectEvent={handleSelectEvent} />
+              )}
 
-            {activeTab === 'analytics' && (
-              <Analytics />
-            )}
+              {activeTab === 'analytics' && (
+                <Analytics />
+              )}
 
-            {activeTab === 'cameras' && (
-              <Cameras />
-            )}
+              {activeTab === 'cameras' && (
+                <Cameras />
+              )}
 
-            {activeTab === 'datasets' && (
-              <Datasets
-                onVideoGenerated={(video) => {
-                  setSelectedVideoId(video.video_id);
-                  setActiveTab('videos');
-                  refreshSystemSummary();
-                }}
-              />
-            )}
+              {activeTab === 'datasets' && (
+                <Datasets
+                  onVideoGenerated={(video) => {
+                    setSelectedVideoId(video.video_id);
+                    setActiveTab('videos');
+                    refreshSystemSummary();
+                  }}
+                />
+              )}
+            </div>
           </main>
         </div>
+
 
         {/* Forensic Evidence Record Modal */}
         {selectedEvent && (

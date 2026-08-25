@@ -157,9 +157,15 @@ export default function VideoPlayer({ video, events = [], onSelectEvent }) {
   const staticFallbackUrl = video.source === 'upload' ? `/uploads/${video.filename}` : `/datasets/${video.filename}`;
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-sm space-y-0" ref={containerRef}>
+    <div className="rounded-3xl border border-slate-200/90 bg-white overflow-hidden shadow-xs space-y-0 transition-all hover:shadow-md" ref={containerRef}>
       {/* Player Frame with Overlays */}
       <div className="relative bg-slate-950 aspect-video flex items-center justify-center group overflow-hidden">
+        {/* HUD Corner Brackets */}
+        <div className="hud-corner-tl" />
+        <div className="hud-corner-tr" />
+        <div className="hud-corner-bl" />
+        <div className="hud-corner-br" />
+
         <video
           key={video.video_id}
           ref={videoRef}

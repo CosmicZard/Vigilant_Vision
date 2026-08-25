@@ -16,10 +16,14 @@ def main():
     print("  IBVAP | Vigilant Vision - Smart Video Analytics")
     print("=" * 60)
 
+    # Find Python executable (.venv if present, else sys.executable)
+    venv_python = BASE_DIR / ".venv" / "Scripts" / "python.exe"
+    python_bin = str(venv_python) if venv_python.exists() else sys.executable
+
     # 1. Start Backend
     print("[1/2] Starting FastAPI Backend on http://127.0.0.1:8000 ...")
     backend_proc = subprocess.Popen(
-        [sys.executable, str(BACKEND_DIR / "run_server.py")],
+        [python_bin, str(BACKEND_DIR / "run_server.py")],
         cwd=str(BACKEND_DIR)
     )
 
