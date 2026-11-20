@@ -152,9 +152,13 @@ export default function VideoPlayer({ video, events = [], onSelectEvent }) {
       </div>
     );
   }
+const BACKEND_URL = 'https://vigilant-vision-backend.onrender.com';
 
-  const streamUrl = `/api/videos/${video.video_id}/stream`;
-  const staticFallbackUrl = video.source === 'upload' ? `/uploads/${video.filename}` : `/datasets/${video.filename}`;
+const streamUrl = `${BACKEND_URL}/api/videos/${video.video_id}/stream`;
+
+const staticFallbackUrl = video.source === 'upload'
+  ? `${BACKEND_URL}/uploads/${video.filename}`
+  : `${BACKEND_URL}/datasets/${video.filename}`;
 
   return (
     <div className="rounded-3xl border border-slate-200/90 bg-white overflow-hidden shadow-xs space-y-0 transition-all hover:shadow-md" ref={containerRef}>
