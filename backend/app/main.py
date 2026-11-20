@@ -38,14 +38,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+
 # CORS Middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permits React Frontend dev server on any port
+    allow_origins=[
+        "https://vigilant-vision-1.onrender.com",
+        "http://localhost:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Mount Static Directories for Evidence Snapshots, Uploads & Datasets
 app.mount("/evidence", StaticFiles(directory=str(settings.EVIDENCE_DIR)), name="evidence")
