@@ -1,7 +1,10 @@
+
 import axios from 'axios';
 
+const API_BASE_URL = 'https://vigilant-vision-backend.onrender.com';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: `${API_BASE_URL}/api`,
   timeout: 30000,
 });
 
@@ -23,7 +26,7 @@ export const VideosAPI = {
   delete: (videoId) => api.delete(`/videos/${videoId}`),
   clearSynthetic: () => api.delete('/videos/synthetic/clear'),
   detections: (videoId) => api.get(`/videos/${videoId}/detections`),
-  streamUrl: (videoId) => `/api/videos/${videoId}/stream`,
+  streamUrl: (videoId) => `${API_BASE_URL}/api/videos/${videoId}/stream`,
 };
 
 export const EventsAPI = {
